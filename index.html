@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="Second Wind">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <style>[hidden]{display:none!important}body{margin:0}</style>
 <script src="config.js"></script>
 <script src="standalone.js"></script>
@@ -1548,7 +1548,7 @@ function greeting() {
 }
 function navHead(title, brand) {
   const date = new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-  return `<header class="nav"><div>${brand ? `<div class="brand"><img class="logo-l" src="brand/mark-black.png" alt=""><img class="logo-d" src="brand/mark-white.png" alt=""><span>Second Wind</span></div>` : `<div class="eyebrow">${esc(date)}</div>`}<h1 class="large">${title}</h1></div><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.sliders}</button></header>`;
+  return `<header class="nav"><div>${brand ? `<div class="brand"><img class="logo-l" src="mark-black.png" alt=""><img class="logo-d" src="mark-white.png" alt=""><span>Second Wind</span></div>` : `<div class="eyebrow">${esc(date)}</div>`}<h1 class="large">${title}</h1></div><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.sliders}</button></header>`;
 }
 const cs = c => `--c1:${c[0]};--c2:${c[1]}`;
 function optOf(T) { const i = D.opts[T.id]; return T.opts[Number.isInteger(i) && T.opts[i] ? i : T.def]; }
@@ -2213,7 +2213,7 @@ function renderProfile() {
     <div class="pc-name">${esc(name)}</div><div class="pc-arch">${arch.title} · Level ${pf.lv.level}</div>
     <div class="pc-rank">${emblem(t, 22)}${t.label} · BR ${pf.ovr.br.toLocaleString()}</div>
     <div class="pc-stats">${ATTR.map(x => `<div class="pc-stat${a[x.k] == null ? ' na' : ''}"><b>${a[x.k] == null ? '–' : a[x.k]}</b><span>${x.k}</span></div>`).join('')}</div>
-    <p class="pc-desc">${arch.desc}</p><img class="pc-mark" src="brand/mark-white.png" alt=""></div>`;
+    <p class="pc-desc">${arch.desc}</p><img class="pc-mark" src="mark-white.png" alt=""></div>`;
 
   const L = pf.lv;
   h += `<section class="section"><h2 class="sec-title">Progression</h2><p class="sec-note">Level comes from showing up. Rank comes from your results.</p><div class="stack">
@@ -3745,7 +3745,7 @@ function settingsSheet() {
       <button class="row" data-act="backup"><div class="row-main"><div class="row-title">Back up</div><div class="row-sub">Copy or save everything, to move it to another device</div></div>${ICON.chev}</button>
       <button class="row" data-act="restore"><div class="row-main"><div class="row-title">Restore from backup</div><div class="row-sub">Merge a backup into what’s here</div></div>${ICON.chev}</button>
       ${ui.sheet && ui.sheet.confirmReset ? `<div class="row"><div class="row-main"><div class="row-title">Erase every session, record and reflection?</div><div class="row-sub">This can’t be undone.</div></div><button class="btn btn-sm" style="background:var(--fill)" data-act="reset-cancel">Cancel</button><button class="btn btn-sm danger" style="background:var(--fill)" data-act="reset-do">Erase</button></div>` : `<button class="row danger" data-act="reset">Reset all data</button>`}
-    </div><div class="about"><img class="about-icon logo-l" src="brand/icon-light.png" alt=""><img class="about-icon logo-d" src="brand/icon-dark.png" alt=""><div><div class="about-name">Second Wind <span style="font-weight:400;opacity:.5;font-size:13px">${BUILD}</span></div><div class="row-sub">${backupCount(D).replace(/ and \d+ saved items?$/, '').replace(/, (?=[^,]*$)/, ' and ')}</div></div></div></div>`;
+    </div><div class="about"><img class="about-icon logo-l" src="icon-light.png" alt=""><img class="about-icon logo-d" src="icon-dark.png" alt=""><div><div class="about-name">Second Wind <span style="font-weight:400;opacity:.5;font-size:13px">${BUILD}</span></div><div class="row-sub">${backupCount(D).replace(/ and \d+ saved items?$/, '').replace(/, (?=[^,]*$)/, ' and ')}</div></div></div></div>`;
 }
 
 /* ---------- audio ---------- */

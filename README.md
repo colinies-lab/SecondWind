@@ -10,9 +10,9 @@ Breathwork, built on the neuroscience. This folder is the standalone web-app ver
 | `config.js` | Your settings. The only file you edit |
 | `standalone.js` | Replaces Claude's sync and AI with local saving and your Wren server |
 | `sw.js` | Offline support |
-| `manifest.webmanifest`, `icons/` | The home-screen name and icon |
-| `voice.mp3`, `brand/` | Wren's recorded voice and the logo |
-| `worker/wren-worker.js` | Wren's server. This goes on Cloudflare, not GitHub |
+| `manifest.webmanifest`, `` | The home-screen name and icon |
+| `voice.mp3`, `` | Wren's recorded voice and the logo |
+| `wren-worker.js` | Wren's server. This goes on Cloudflare, not GitHub |
 
 ## 1. Put it on GitHub Pages (about 10 minutes, free)
 
@@ -41,7 +41,7 @@ Wren needs a tiny server that holds your Anthropic API key, so the key never sit
 
 **Create the server on Cloudflare (free plan)**
 1. Sign up at dash.cloudflare.com, then go to **Workers & Pages → Create → Create Worker**. Name it `wren` and click **Deploy**.
-2. Click **Edit code**, delete the sample code, paste in all of `worker/wren-worker.js`, and click **Deploy**.
+2. Click **Edit code**, delete the sample code, paste in all of `wren-worker.js`, and click **Deploy**.
 3. Go to the Worker's **Settings → Variables and Secrets** and add:
    - `ANTHROPIC_API_KEY`: type **Secret**, value is your key.
    - `ALLOWED_ORIGIN`: type **Text**, value is `https://YOUR-USERNAME.github.io`. Use exactly that: no trailing slash and no `/second-wind`.

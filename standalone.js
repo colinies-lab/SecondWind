@@ -1,7 +1,7 @@
 /* Second Wind, standalone runtime.
    Inside Claude, the app gets cloud sync, sign-in and Wren's brain from Claude itself.
    Here, everything saves on this device, and Wren talks through your own small server
-   (see worker/wren-worker.js and the README). */
+   (see wren-worker.js and the README). */
 (function () {
   var cfg = window.SW_CONFIG || {};
   var endpoint = String(cfg.wrenEndpoint || '').trim();

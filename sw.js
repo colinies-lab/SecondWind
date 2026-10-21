@@ -1,10 +1,10 @@
 /* Offline support. The app shell is cached on install; every later visit serves the
    cached copy instantly and refreshes it in the background, so a new upload shows up
    on the second launch after you push it. */
-const CACHE = 'second-wind-445239f758';
+const CACHE = 'second-wind-406617b29d';
 const SHELL = ['./', 'index.html', 'config.js', 'standalone.js', 'voice.mp3', 'manifest.webmanifest',
-  'brand/mark-black.png', 'brand/mark-white.png', 'brand/icon-light.png', 'brand/icon-dark.png',
-  'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
+  'mark-black.png', 'mark-white.png', 'icon-light.png', 'icon-dark.png',
+  'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
