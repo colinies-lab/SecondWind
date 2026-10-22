@@ -1,7 +1,7 @@
 /* Offline support. The app shell is cached on install; every later visit serves the
    cached copy instantly and refreshes it in the background, so a new upload shows up
    on the second launch after you push it. */
-const CACHE = 'second-wind-406617b29d';
+const CACHE = 'second-wind-4cf23d5b47';
 const SHELL = ['./', 'index.html', 'config.js', 'standalone.js', 'voice.mp3', 'manifest.webmanifest',
   'mark-black.png', 'mark-white.png', 'icon-light.png', 'icon-dark.png',
   'icon-180.png', 'icon-192.png', 'icon-512.png'];

@@ -1,5 +1,30 @@
 # Second Wind release notes
 
+## Alpha 1.1 (October 21, 2026)
+
+**Solo mode**
+- A Companion switch in Settings: With Wren or Solo. Solo hides Wren, her chat, the bond and her voice. Voice cues, stats, tests and everything else stay
+- New players pick one on first launch
+- Switching back brings Wren back with everything she knew
+
+**Wren's new face and moods**
+- Redrawn face: softer jaw, real eye whites, lined lids, a fuller smile
+- Moods that change with what's happening: happy after a session, proud when you hit your goal or keep a streak, calm during calming and sleep sessions, sleepy late at night, thinking while she writes back, and fired up or concerned in chat when the moment calls for it
+- The mood shows on her portrait caption
+
+**Wardrobe**
+- 8 outfits: Hoodie, White tee, Team jersey, Denim jacket, Cozy knit, Varsity jacket (with your initial), Blazer and the Day Ones jacket
+- New outfits unlock at Bond 3, 5, 7, 10, 15 and 20. "Match her mode" keeps each personality's own outfit
+
+**She talks more**
+- 24 new recorded lines: one at the start of a session, one at the halfway point, and one when you finish, in each of her 8 personalities
+- Uses the same "Wren's voice" switch in Settings
+
+**Weekly check-in**
+- Every Sunday (and again Monday for last week), a card on Breathe: sessions, minutes, days practiced, bond XP and a day-by-day chart
+- Wren writes a short note on your week and picks one focus tool for next week
+- "Your week so far" lives on Wren's tab any day
+
 ## Alpha 1.0 (October 21, 2026)
 
 The first official build. Everything below is new.

@@ -791,6 +791,44 @@ html.staged .fab, html.chatting .fab { display: none; }
   .mini { opacity: .5; right: -20px; }
   .large { font-size: 30px; }
 }
+/* Solo mode: no companion */
+html.solo .tab[data-tab="wren"], html.solo .wren-nudge, html.solo .st-wren, html.solo .coach-av, html.solo .bond-pop, html.solo .bond-cel, html.solo .hero-eyebrow .orb { display: none !important; }
+html.solo .tabbar-in { grid-template-columns: repeat(5, 1fr); }
+/* companion chooser */
+.comp-body { padding-top: 6px; }
+.comp-title { font: 700 26px/1.15 var(--font-display); letter-spacing: -.02em; text-align: center; margin: 10px 0 6px; }
+.comp-card { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; padding: 12px; border-radius: 22px; background: var(--card); box-shadow: var(--shadow); margin-bottom: 12px; transition: transform .2s; }
+.comp-card:active { transform: scale(.98); }
+.comp-art { flex: none; width: 96px; height: 112px; border-radius: 16px; overflow: hidden; display: block; }
+.comp-art .wren-svg { width: 100%; height: 100%; display: block; }
+.solo-art { display: grid; place-items: center; background: linear-gradient(150deg, #0B7E93, #2FB58C); }
+.solo-art img { width: 48px; height: 48px; }
+.comp-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.comp-text b { font: 700 19px/1.2 var(--font-display); }
+.comp-text span { font-size: 14.5px; color: var(--fg-2); line-height: 1.38; }
+/* wardrobe */
+.outfits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; }
+.outfit { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.outfit-art { position: relative; display: block; width: 100%; aspect-ratio: 240 / 260; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 2px transparent; transition: box-shadow .2s, transform .2s; }
+.outfit-art .wren-svg { width: 100%; height: 100%; display: block; }
+.outfit[aria-checked="true"] .outfit-art { box-shadow: 0 0 0 2.5px var(--bg), 0 0 0 5px var(--tint); }
+.outfit:active .outfit-art { transform: scale(.96); }
+.outfit.locked .outfit-art .wren-svg { filter: grayscale(.85) brightness(.75); opacity: .6; }
+.outfit-lock { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.outfit-name { font-size: 12.5px; font-weight: 600; color: var(--fg-2); text-align: center; line-height: 1.2; }
+.outfit[aria-checked="true"] .outfit-name { color: var(--fg); }
+/* weekly check-in */
+.wk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.wk-cell { background: var(--card); border-radius: 16px; padding: 12px 14px; box-shadow: var(--shadow); }
+.wk-v { font: 700 30px/1.1 var(--font-display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.wk-v small { font-size: 16px; font-weight: 600; color: var(--fg-2); }
+.wk-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; padding: 14px 12px 10px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+.wk-day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.wk-bar { display: flex; align-items: flex-end; width: 100%; max-width: 24px; height: 72px; border-radius: 7px; background: var(--fill); overflow: hidden; }
+.wk-bar i { display: block; width: 100%; border-radius: 7px; background: linear-gradient(180deg, #8C6CF0, #2A9DF4); }
+.wk-day.future .wk-bar { opacity: .45; }
+.wk-lab { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+.wk-row { margin-top: 10px; }
 </style>
 
 <div class="app">
@@ -881,7 +919,7 @@ html.staged .fab, html.chatting .fab { display: none; }
 (() => {
 'use strict';
 /* ---------- crash reporter: shows any error on screen so it can be screenshotted ---------- */
-const BUILD = 'Alpha 1.0';
+const BUILD = 'Alpha 1.1';
 const Crash = { last: '', shown: 0, trail: [], log: [], timer: null };
 try { Crash.log = JSON.parse(localStorage.getItem('second-wind:v1:errors') || '[]') || []; } catch (e) {}
 function crashContext() {
@@ -1331,8 +1369,8 @@ const petals = () => [0, 1, 2, 3, 4, 5].map(i => `<i class="petal" style="--i:${
 
 /* ---------- state + storage ---------- */
 const KEY = 'second-wind:v1';
-const SETTINGS = ['name', 'goal', 'sound', 'ambience', 'voice', 'haptics', 'opts', 'coach', 'drone', 'wrenVoice', 'wren', 'sign', 'horo', 'nick', 'wnote', 'wrenStage', 'look'];
-const DEF = () => ({ v: 1, name: '', goal: 5, sound: 'breath', ambience: true, voice: false, haptics: true, opts: {}, coach: null, drone: 0, wrenVoice: true, wren: 'classic', sign: '', horo: null, settingsAt: 0, resetAt: 0, sessions: [], tests: [], journal: [], favs: [], saved: [], qa: [], notes: [], talk: [], nick: '', wnote: null, wrenStage: true, look: null });
+const SETTINGS = ['name', 'goal', 'sound', 'ambience', 'voice', 'haptics', 'opts', 'coach', 'drone', 'wrenVoice', 'wren', 'sign', 'horo', 'nick', 'wnote', 'wrenStage', 'look', 'outfit', 'companion', 'companionAsked', 'weekly'];
+const DEF = () => ({ v: 1, name: '', goal: 5, sound: 'breath', ambience: true, voice: false, haptics: true, opts: {}, coach: null, drone: 0, wrenVoice: true, wren: 'classic', sign: '', horo: null, settingsAt: 0, resetAt: 0, sessions: [], tests: [], journal: [], favs: [], saved: [], qa: [], notes: [], talk: [], nick: '', wnote: null, wrenStage: true, look: null, outfit: 'mode', companion: 'wren', companionAsked: false, weekly: null });
 function normalize(o) {
   const d = DEF();
   if (!o || typeof o !== 'object') return d;
@@ -1347,6 +1385,9 @@ function normalize(o) {
   if (!Array.isArray(d.talk)) d.talk = [];
   if (typeof d.nick !== 'string') d.nick = '';
   if (!d.look || typeof d.look !== 'object' || Array.isArray(d.look)) d.look = null;
+  if (d.companion !== 'solo') d.companion = 'wren';
+  if (typeof d.outfit !== 'string') d.outfit = 'mode';
+  if (!d.weekly || typeof d.weekly !== 'object' || Array.isArray(d.weekly)) d.weekly = null;
   d.drone = [174, 285, 396, 417, 528, 639, 741, 852, 963].includes(+d.drone) ? +d.drone : 0;
   if (!d.opts || typeof d.opts !== 'object' || Array.isArray(d.opts)) d.opts = {};
   d.goal = clamp(Number(d.goal) || 5, 1, 60);
@@ -1568,14 +1609,15 @@ function renderBreathe() {
   const sg = suggestion(), T = TECH_BY[sg.id], st = stats(), goalSec = D.goal * 60;
   let h = '';
   h += `<button class="hero" data-act="open" data-id="${T.id}" style="${cs(T.c)}">
-    <div class="hero-copy"><div class="hero-eyebrow">${wrenAv()}Wren suggests ${sg.when}</div><div class="hero-title">${T.name}</div><div class="hero-sub">${greeting()} ${sg.line}</div>
+    <div class="hero-copy"><div class="hero-eyebrow">${solo() ? 'Suggested' : wrenAv() + 'Wren suggests'} ${sg.when}</div><div class="hero-title">${T.name}</div><div class="hero-sub">${greeting()} ${sg.line}</div>
     <span class="hero-cta" data-start="1">${ICON.play} Start · ${esc(optOf(T).label)}</span></div>
     <div class="mini" aria-hidden="true">${petals()}</div></button>`;
   const todayMain = st.todaySec > 0 ? `${fmtMins(st.todaySec)} of ${D.goal} min today` : `0 of ${D.goal} min today`;
   const pf = safeProfile(), qd = pf ? dailyQuests(dayKey(Date.now()), pf.idx).filter(q => q.done).length : 0;
   const todaySub = (st.streak > 0 ? `${st.streak}-day streak${st.practicedToday ? '' : ' at stake'}` : 'No streak yet') + (pf ? ` · ${qd}/3 quests · Level ${pf.lv.level}` : '');
   h += `<button class="today" data-act="tab" data-tab="stats">${ringSVG(st.todaySec / goalSec, 40, 6)}<div class="today-text"><div class="today-main">${todayMain}</div><div class="today-sub">${todaySub}</div></div>${ICON.chev}</button>`;
-  h += wrenNudge();
+  h += weekCard();
+  if (!solo()) h += wrenNudge();
   h += `<button class="today" data-act="bview" data-v="browse"><span class="b-ico" style="--c1:#3B82F6;--c2:#27B7A4;width:40px;height:40px"><svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg></span><div class="today-text"><div class="today-main">Browse all ${TECH.length} techniques</div><div class="today-sub">Including ${FLOWS.length} new Flows like Brain Fog</div></div>${ICON.chev}</button>`;
   for (const cat of Object.keys(CAT)) {
     const list = TECH.filter(x => x.cat === cat);
@@ -2065,7 +2107,7 @@ function coachCard() {
   let h = `<div class="card coach">${wrenAv(44, 'coach-av')}`;
   if (c && Array.isArray(c.reads) && c.reads.length) {
     const T = c.next && TECH_BY[c.next.tool];
-    h += `<div class="k">Wren’s read · ${esc(when(c.t))}</div><div class="coach-head">${esc(c.headline || 'Your read')}</div><ul class="rules">${c.reads.map(r => `<li>${esc(r)}</li>`).join('')}</ul>`;
+    h += `<div class="k">${solo() ? 'Coach read' : 'Wren’s read'} · ${esc(when(c.t))}</div><div class="coach-head">${esc(c.headline || 'Your read')}</div><ul class="rules">${c.reads.map(r => `<li>${esc(r)}</li>`).join('')}</ul>`;
     if (T) h += `<button class="row coach-next" data-act="open" data-id="${T.id}" style="${cs(T.c)}"><span class="dot"></span><div class="row-main"><div class="k">Next move</div><div class="row-title">${T.name}</div><div class="row-sub">${esc(c.next.why || '')}</div></div>${ICON.chev}</button>`;
   } else {
     h += `<div class="k">Wren’s read</div><p class="note" style="margin-top:6px">Wren reads your stats and writes a personal breakdown: what you’re good at, what’s holding your rating back, and your next move.</p>`;
@@ -2692,7 +2734,8 @@ function lookSheet() {
     <div class="grp-label">Hair color</div>${sw('hair', HAIRS)}
     <div class="grp-label">Eyes</div>${sw('eyes', EYES)}
     <div class="grp-label">Highlight streak</div>${sw('streak', STREAKS)}
-    <p class="caption" style="margin:14px 4px 0">Her look carries across all eight modes. Each mode keeps its own outfit. “Mode” uses the streak color from her current personality.</p></div>`;
+    ${outfitSection()}
+    <p class="caption" style="margin:14px 4px 0">Her look carries across all eight modes. New outfits unlock as your bond grows. “Match her mode” lets each personality wear its own.</p></div>`;
   return h;
 }
 function lookApply(next) {
@@ -2700,50 +2743,295 @@ function lookApply(next) {
   paintWren(); renderSheet(); renderView();
 }
 
+/* ---------- Wren v2: face, moods, wardrobe ---------- */
+const MOODS = {
+  neutral: { name: 'Neutral' },
+  happy: { name: 'Happy', eyes: 'happy', brows: 'raised', mouth: 'grin' },
+  proud: { name: 'Proud', eyes: 'open', brows: 'raised', mouth: 'smirk' },
+  calm: { name: 'Calm', eyes: 'closed', brows: 'soft', mouth: 'calm' },
+  sleepy: { name: 'Sleepy', eyes: 'sleepy', brows: 'soft', mouth: 'calm' },
+  fired: { name: 'Fired up', eyes: 'open', brows: 'firm', mouth: 'grin' },
+  concerned: { name: 'Concerned', eyes: 'open', brows: 'worried', mouth: 'flat' },
+  thinking: { name: 'Thinking', eyes: 'open', brows: 'think', mouth: 'o' }
+};
+const OUTFITS = [
+  { id: 'mode', name: 'Match her mode', lv: 1 },
+  { id: 'hoodie', name: 'Hoodie', lv: 1, kind: 'hoodie', top: '#2B3550', topD: '#1E2640' },
+  { id: 'tee', name: 'White tee', lv: 1, kind: 'tee', top: '#F1F1EE', topD: '#D9D9D4' },
+  { id: 'jersey', name: 'Team jersey', lv: 3, kind: 'jersey', top: '#14161C', topD: '#0B0C10', acc: '#3B82F6' },
+  { id: 'denim', name: 'Denim jacket', lv: 5, kind: 'denim', top: '#4E73A8', topD: '#3A5A8A' },
+  { id: 'knit', name: 'Cozy knit', lv: 7, kind: 'knit', top: '#E7DAC4', topD: '#D3C2A6' },
+  { id: 'varsity', name: 'Varsity jacket', lv: 10, kind: 'varsity', top: '#1F2A44', topD: '#162036', acc: '#F2E6C9' },
+  { id: 'blazer', name: 'Blazer', lv: 15, kind: 'blazer', top: '#1B1C21', topD: '#2A2B31' },
+  { id: 'dayone', name: 'Day Ones jacket', lv: 20, kind: 'dayone', top: '#111216', topD: '#1C1D22', acc: '#F2C230' }
+];
+const OUTFIT_BY = Object.fromEntries(OUTFITS.map(o => [o.id, o]));
+const WMood = { cur: 'neutral', until: 0 };
+
+function wrenExpr(L, mood) {
+  const base = { eyes: L.eyes || 'open', brows: L.brows === 'firm' ? 'firm' : 'soft', mouth: L.mouth === 'grin' ? 'grin' : L.mouth === 'calm' ? 'calm' : 'smile' };
+  if (L.eyes === 'closed') base.eyes = 'closed';
+  const m = MOODS[mood] || MOODS.neutral;
+  const out = Object.assign({}, base);
+  ['eyes', 'brows', 'mouth'].forEach(k => { if (m[k]) out[k] = m[k]; });
+  if (base.eyes === 'wink' && (mood === 'neutral' || mood === 'happy' || mood === 'proud' || !MOODS[mood])) out.eyes = 'wink';
+  return out;
+}
+
+function wrenTorso(L, O, C, initial) {
+  const k = O ? O.kind : 'mode', top = O ? O.top : L.top, topD = O ? O.topD : L.topD, acc = O && O.acc ? O.acc : L.acc;
+  const torso = `<path d="M20 262c0-48 30-72 72-80h56c42 8 72 32 72 80z" fill="${top}"/>`;
+  const neck = `<path d="M104 136h32v40c0 12-32 12-32 0z" fill="${C.neck}"/><path d="M104 150c10 8 22 8 32 0v-14h-32z" fill="${C.neckSh}" opacity=".5"/>`;
+  let b = torso;
+  if (k === 'mode') {
+    if (!L.wrap && !L.plain) b += `<ellipse cx="120" cy="186" rx="50" ry="20" fill="${topD}"/>`;
+    if (L.plain) b += `<path d="M90 182c8 16 52 16 60 0" fill="none" stroke="${topD}" stroke-width="7" stroke-linecap="round"/>`;
+    b += neck;
+    if (L.wrap) b += `<path d="M97 180l23 46 23-46c-12 8-34 8-46 0z" fill="${C.neck}"/><path d="M95 181l25 50M145 181l-36 72" fill="none" stroke="${topD}" stroke-width="6" stroke-linecap="round"/><path d="M96 184l6 12M144 184l-6 12" stroke="${acc}" stroke-width="3" stroke-linecap="round"/>`;
+    if (!L.wrap && !L.plain) b += `<path d="M108 200v26M132 200v26" stroke="${L.string || '#E6E9F2'}" stroke-width="3" stroke-linecap="round"/>`;
+    return b;
+  }
+  if (k === 'hoodie') return b + `<ellipse cx="120" cy="186" rx="50" ry="20" fill="${topD}"/>` + neck + `<path d="M108 200v26M132 200v26" stroke="#E6E9F2" stroke-width="3" stroke-linecap="round"/>`;
+  if (k === 'tee') return b + neck + `<path d="M98 180c6 10 38 10 44 0" fill="none" stroke="${topD}" stroke-width="5" stroke-linecap="round"/>`;
+  if (k === 'jersey') return b + `<path d="M40 232c8-24 26-40 50-48" fill="none" stroke="${acc}" stroke-width="7"/><path d="M200 232c-8-24-26-40-50-48" fill="none" stroke="${acc}" stroke-width="7"/>` + neck +
+    `<path d="M100 181l20 24 20-24" fill="none" stroke="${acc}" stroke-width="6" stroke-linejoin="round"/><text x="150" y="240" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="${acc}" text-anchor="middle">07</text>`;
+  if (k === 'denim') return b + neck + `<path d="M100 181l20 52 20-52z" fill="#F1F1EE"/><path d="M100 181l-8 34 26 20M140 181l8 34-26 20" fill="none" stroke="${topD}" stroke-width="4" stroke-linejoin="round"/><path d="M60 222v40M180 222v40" stroke="${topD}" stroke-width="3" stroke-dasharray="4 5"/><circle cx="84" cy="236" r="2.6" fill="#C9A15A"/><circle cx="156" cy="236" r="2.6" fill="#C9A15A"/>`;
+  if (k === 'knit') return b + `<path d="M50 262v-40M70 262v-52M90 262v-56M150 262v-56M170 262v-52M190 262v-40" stroke="${topD}" stroke-width="3" stroke-dasharray="3 4" stroke-linecap="round"/>` + neck + `<path d="M95 181c8 13 42 13 50 0" fill="none" stroke="${topD}" stroke-width="10" stroke-linecap="round"/>`;
+  if (k === 'varsity') return b + `<path d="M22 262c2-30 14-50 34-62l6 62zM218 262c-2-30-14-50-34-62l-6 62z" fill="${acc}"/>` + neck + `<path d="M95 181c8 13 42 13 50 0" fill="none" stroke="${acc}" stroke-width="7" stroke-linecap="round"/><path d="M120 200v62" stroke="${topD}" stroke-width="3"/><circle cx="120" cy="214" r="2.4" fill="${acc}"/><circle cx="120" cy="234" r="2.4" fill="${acc}"/><circle cx="148" cy="222" r="15" fill="${acc}"/><text x="148" y="229" font-family="Georgia, serif" font-size="19" font-weight="700" fill="${top}" text-anchor="middle">${esc(initial)}</text>`;
+  if (k === 'blazer') return b + neck + `<path d="M100 181l20 46 20-46z" fill="#F4F4F2"/><path d="M100 181l-12 36 32 14zM140 181l12 36-32 14z" fill="${topD}"/><circle cx="120" cy="246" r="2.6" fill="#55575F"/>`;
+  if (k === 'dayone') return b + `<path d="M20 262c0-48 30-72 72-80M220 262c0-48-30-72-72-80" fill="none" stroke="${acc}" stroke-width="3"/>` + neck + `<path d="M95 181c8 13 42 13 50 0" fill="none" stroke="${acc}" stroke-width="6" stroke-linecap="round"/><path d="M120 196v66" stroke="${acc}" stroke-width="2"/><text x="152" y="232" font-family="system-ui, sans-serif" font-size="15" font-weight="800" fill="${acc}" text-anchor="middle" letter-spacing="1">D1</text>`;
+  return b + neck;
+}
+
 function wrenSVG(view, L, live) {
-  const vb = view === 'head' ? '46 12 148 148' : '0 0 240 260', A = curLook(L.app), C = lookColors(A, L), ST = HAIR_STYLES[A.style], H = C.brow, S = C.s, dark = '#2A2C36';
+  const vb = view === 'head' ? '46 12 148 148' : '0 0 240 260', A = curLook(L.app), C = lookColors(A, L), ST = HAIR_STYLES[A.style], S = C.s, dark = '#2A2C36';
+  const oid = L.outfit || D.outfit || 'mode', O = oid !== 'mode' && OUTFIT_BY[oid] && OUTFIT_BY[oid].kind ? OUTFIT_BY[oid] : null;
+  const mood = L.mood || (live ? moodNow() : 'neutral'), E = wrenExpr(L, mood);
+  const lightSkin = lum(S) > .55, lip = lightSkin ? '#B5524B' : shade(S, -.42), lash = '#24170F', initial = ((D.nick || (typeof displayName === 'function' ? displayName() : '') || 'W').trim()[0] || 'W').toUpperCase();
   let b = '';
-  if (L.hoodUp) b += `<path d="M46 112C40 38 84 6 122 6c42 0 84 34 74 108-4 30-6 50-14 68H60c-8-18-10-42-14-70z" fill="${L.topD}"/>`;
+  if (L.hoodUp && (!O || O.kind === 'hoodie')) b += `<path d="M46 112C40 38 84 6 122 6c42 0 84 34 74 108-4 30-6 50-14 68H60c-8-18-10-42-14-70z" fill="${O ? O.topD : L.topD}"/>`;
   b += ST.back(C, L);
   if (C.streak && ST.streak) b += ST.streak(C.streak);
-  const hb = b; b = '';
-  b += `<path d="M20 262c0-48 30-72 72-80h56c42 8 72 32 72 80z" fill="${L.top}"/>`;
-  if (!L.wrap && !L.plain) b += `<ellipse cx="120" cy="186" rx="50" ry="20" fill="${L.topD}"/>`;
-  if (L.plain) b += `<path d="M90 182c8 16 52 16 60 0" fill="none" stroke="${L.topD}" stroke-width="7" stroke-linecap="round"/>`;
-  b += `<path d="M104 136h32v40c0 12-32 12-32 0z" fill="${C.neck}"/><path d="M104 150c10 8 22 8 32 0v-14h-32z" fill="${C.neckSh}" opacity=".55"/>`;
-  if (L.wrap) b += `<path d="M97 180l23 46 23-46c-12 8-34 8-46 0z" fill="${C.neck}"/><path d="M95 181l25 50M145 181l-36 72" fill="none" stroke="${L.topD}" stroke-width="6" stroke-linecap="round"/><path d="M96 184l6 12M144 184l-6 12" stroke="${L.acc}" stroke-width="3" stroke-linecap="round"/>`;
+  const hb = b;
+  b = wrenTorso(L, O, C, initial);
   if (L.phones === 'neck') b += `<path d="M84 172c0 30 72 30 72 0" fill="none" stroke="#3C4050" stroke-width="7" stroke-linecap="round"/><rect x="70" y="158" width="20" height="32" rx="9" fill="${dark}"/><rect x="150" y="158" width="20" height="32" rx="9" fill="${dark}"/><rect x="74" y="164" width="12" height="20" rx="6" fill="${L.acc}"/><rect x="154" y="164" width="12" height="20" rx="6" fill="${L.acc}"/>`;
-  if (!L.wrap && !L.plain) b += `<path d="M108 200v26M132 200v26" stroke="${L.string || '#E6E9F2'}" stroke-width="3" stroke-linecap="round"/>`;
+  const chestFree = !O || O.kind === 'hoodie' || O.kind === 'tee' || O.kind === 'knit';
   if (L.whistle) b += `<path d="M98 180l22 42 22-42" fill="none" stroke="${L.acc}" stroke-width="3" stroke-linejoin="round"/><rect x="110" y="218" width="20" height="12" rx="6" fill="${L.acc}"/><circle cx="125" cy="224" r="2.6" fill="#1B1C20"/>`;
-  else if (L.moon) b += `<path d="M127 232a10 10 0 1 0 7 16 8 8 0 0 1-7-16z" fill="${L.acc}"/>`;
-  else if (!L.wrap) b += `<path d="M110 244a10 10 0 0 0 20 0z" fill="${L.acc}"/><ellipse cx="121" cy="244" rx="10" ry="2.4" fill="#3B82F6"/><path d="M113 242a10 10 0 0 1 20 0z" fill="${L.acc}"/>`;
-  let h = `<ellipse cx="76" cy="102" rx="6" ry="10" fill="${C.ear}"/><ellipse cx="164" cy="102" rx="6" ry="10" fill="${C.ear}"/><path d="M76 92c0-34 20-48 44-48s44 14 44 48c0 30-18 54-44 54S76 122 76 92z" fill="${S}"/><circle cx="95" cy="117" r="8" fill="${C.blush}" opacity="${C.blushOp}"/><circle cx="145" cy="117" r="8" fill="${C.blush}" opacity="${C.blushOp}"/>`;
+  else if (L.moon && chestFree) b += `<path d="M127 232a10 10 0 1 0 7 16 8 8 0 0 1-7-16z" fill="${L.acc}"/>`;
+  else if (!L.wrap && chestFree) b += `<path d="M110 244a10 10 0 0 0 20 0z" fill="${L.acc}"/><ellipse cx="121" cy="244" rx="10" ry="2.4" fill="#3B82F6"/><path d="M113 242a10 10 0 0 1 20 0z" fill="${L.acc}"/>`;
+
+  // face: softer jaw, gentle chin, inner-ear shading, soft forehead shadow under the fringe
+  let h = `<ellipse cx="77" cy="100" rx="5.5" ry="9" fill="${C.ear}"/><ellipse cx="163" cy="100" rx="5.5" ry="9" fill="${C.ear}"/><path d="M78 98q-2-4 0-6M162 98q2-4 0-6" fill="none" stroke="${shade(C.ear, -.15)}" stroke-width="1.6" stroke-linecap="round"/>`
+    + `<path d="M77 88c0-30 19-46 43-46s43 16 43 46c0 20-5 34-14 44-8 9-18 14-29 14s-21-5-29-14c-9-10-14-24-14-44z" fill="${S}"/>`
+    + `<path d="M80 74c10-16 26-24 40-24s30 8 40 24c-10-6-24-10-40-10s-30 4-40 10z" fill="${shade(S, -.14)}" opacity=".45"/>`
+    + `<ellipse cx="94" cy="117" rx="9" ry="5.5" fill="${C.blush}" opacity="${(C.blushOp * .85).toFixed(2)}"/><ellipse cx="146" cy="117" rx="9" ry="5.5" fill="${C.blush}" opacity="${(C.blushOp * .85).toFixed(2)}"/>`;
   const hf = h; h = '';
-  h += L.brows === 'firm' ? `<path d="M92 83l19 4.5M148 83l-19 4.5" fill="none" stroke="${H}" stroke-width="3.2" stroke-linecap="round"/>` : `<path d="M92 87q9-6 19-2M129 85q10-4 19 2" fill="none" stroke="${H}" stroke-width="3" stroke-linecap="round"/>`;
-  const eye = x => `<ellipse cx="${x}" cy="101" rx="5" ry="6.5" fill="${C.eye}"/><ellipse cx="${x}" cy="101.8" rx="2.6" ry="3.4" fill="#120B08"/><circle cx="${x + 1.8}" cy="98.6" r="1.7" fill="#fff"/>`, shut = x => `<path d="M${x - 6} 102q6-6 12 0" fill="none" stroke="#2B1D16" stroke-width="3" stroke-linecap="round"/>`;
+
+  const BR = { soft: ['M91 87q10-6.5 20-2.2', 'M129 84.8q10-4.3 20 2.2'], firm: ['M91 84.5l20 4', 'M149 84.5l-20 4'], raised: ['M91 85q10-8 20-3.4', 'M129 81.6q10-4.6 20 3.4'],
+    worried: ['M91 88.5q9-1 19-6.5', 'M130 82q10 5.5 19 6.5'], think: ['M91 87q10-6.5 20-2.2', 'M129 82q10-6 20 1'] }[E.brows] || null;
+  h += `<path d="${BR[0]}M${BR[1].slice(1)}" fill="none" stroke="${C.brow}" stroke-width="2.7" stroke-linecap="round"/>`;
+  const cy = 100;
+  const eyeOpen = (x, side) => { const i = x - side * 7.8, o = x + side * 8.4, c = x + side * .4; return `<path d="M${i} ${cy + .6}Q${x - side * .5} ${cy - 10.8} ${o} ${cy - 1.4}Q${x + side * .8} ${cy + 8.6} ${i} ${cy + .6}Z" fill="#FBFAF7"/><circle cx="${c}" cy="${cy + .2}" r="5.7" fill="${C.eye}"/><circle cx="${c}" cy="${cy + .7}" r="2.7" fill="#140C08"/><circle cx="${c + 2}" cy="${cy - 1.8}" r="1.8" fill="#fff"/><circle cx="${c - 1.8}" cy="${cy + 2.7}" r=".9" fill="#fff" opacity=".8"/>`; };
+  const lid = (x, side) => { const i = x - side * 8.2, o = x + side * 8.6, w = x + side * 12.4; return `<path d="M${i} ${cy + .8}Q${x - side * .5} ${cy - 12} ${o} ${cy - 1.6}L${w} ${cy - 5.6}Q${x + side * 9.6} ${cy - 3.2} ${x + side * 8.2} ${cy}Q${x - side * .5} ${cy - 9.4} ${i} ${cy + .8}Z" fill="${lash}"/><path d="M${i + side * 1.8} ${cy + 3}Q${x + side * .6} ${cy + 8.4} ${o - side * 1.8} ${cy + 1.6}" fill="none" stroke="${shade(S, -.3)}" stroke-width="1" stroke-linecap="round" opacity=".55"/>`; };
+  const happy = x => `<path d="M${x - 6.5} ${cy + 1.5}q6.5-8 13 0" fill="none" stroke="${lash}" stroke-width="2.8" stroke-linecap="round"/>`;
+  const shut = (x, side) => `<path d="M${x - 6.5} ${cy}q6.5 5.5 13 0" fill="none" stroke="${lash}" stroke-width="2.5" stroke-linecap="round"/><path d="M${side < 0 ? x - 6.5 : x + 6.5} ${cy}l${side * 2.4} 1.6" stroke="${lash}" stroke-width="1.8" stroke-linecap="round"/>`;
+  const sleepy = (x, side) => eyeOpen(x, side) + `<path d="M${x - 7} ${cy - .2}a7 7.6 0 0 1 14 0z" fill="${S}"/><path d="M${x - 7} ${cy - .2}h14" stroke="${lash}" stroke-width="2.2" stroke-linecap="round"/>`;
   h += '<g class="w-eyebox">';
-  if (L.eyes === 'closed') h += shut(102) + shut(138);
-  else if (L.eyes === 'wink') h += `<path d="M95.5 96.5l-3.5-2" stroke="#2B1D16" stroke-width="2" stroke-linecap="round"/><g class="w-eyes">${eye(102)}</g>${shut(138)}`;
-  else {
-    h += `<path d="M95.5 96.5l-3.5-2M144.5 96.5l3.5-2" stroke="#2B1D16" stroke-width="2" stroke-linecap="round"/><g class="w-eyes">${eye(102)}${eye(138)}</g>`;
-    if (L.eyes === 'sleepy') h += `<path d="M95 100.5a7 7.5 0 0 1 14 0zM131 100.5a7 7.5 0 0 1 14 0z" fill="${S}"/><path d="M95.5 100.5h13M131.5 100.5h13" stroke="#2B1D16" stroke-width="2" stroke-linecap="round"/>`;
-  }
+  const lx = 101, rx = 139;
+  if (E.eyes === 'happy') h += happy(lx) + happy(rx);
+  else if (E.eyes === 'closed') h += shut(lx, -1) + shut(rx, 1);
+  else if (E.eyes === 'sleepy') h += sleepy(lx, -1) + sleepy(rx, 1);
+  else if (E.eyes === 'wink') h += `<g class="w-eyes">${eyeOpen(lx, -1)}</g>${lid(lx, -1)}${happy(rx)}`;
+  else h += `<g class="w-eyes">${eyeOpen(lx, -1)}${eyeOpen(rx, 1)}</g>${lid(lx, -1)}${lid(rx, 1)}`;
   h += '</g>';
-  h += `<path d="M119 108q-3 8 3 10" fill="none" stroke="${C.nose}" stroke-width="2.2" stroke-linecap="round"/>`;
-  h += L.mouth === 'grin' ? `<g class="w-smile"><path d="M105 122q15 18 30 0z" fill="#7A2B28"/><path d="M108.5 123.5q11.500 5.500 23 0" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></g>`.replace('11.500 5.500', '11.5 5.5')
-    : L.mouth === 'calm' ? `<path class="w-smile" d="M110 126q10 7 20 0" fill="none" stroke="#A3443C" stroke-width="3.2" stroke-linecap="round"/>`
-    : `<path class="w-smile" d="M107 125q13 12 26 0" fill="none" stroke="#A3443C" stroke-width="3.2" stroke-linecap="round"/>`;
-  h += `<ellipse class="w-talk" cx="120" cy="129" rx="8" ry="5.5" fill="#7A2B28"/>`;
+  h += `<path d="M119.5 106.5q-2.6 6.2 1.6 8.2" fill="none" stroke="${C.nose}" stroke-width="2" stroke-linecap="round"/>`;
+  const MO = {
+    smile: `<path class="w-smile" d="M108.6 123.2q11.4 11 22.8 0q-11.4 5.2-22.8 0z" fill="${lip}" stroke="${lip}" stroke-width="1.6" stroke-linejoin="round"/>`,
+    grin: `<g class="w-smile"><path d="M107.5 121.5q12.5 15 25 0z" fill="#7A2B28"/><path d="M110 122.5q10 3.8 20 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`,
+    calm: `<path class="w-smile" d="M112 124.5q8 5 16 0" fill="none" stroke="${lip}" stroke-width="2.8" stroke-linecap="round"/>`,
+    smirk: `<path class="w-smile" d="M110 124q10 7.5 21-1.5" fill="none" stroke="${lip}" stroke-width="3" stroke-linecap="round"/>`,
+    flat: `<path class="w-smile" d="M112 126q8 1.6 16 0" fill="none" stroke="${lip}" stroke-width="2.8" stroke-linecap="round"/>`,
+    o: `<ellipse class="w-smile" cx="122" cy="125.5" rx="3.4" ry="4" fill="#7A2B28"/>`
+  };
+  h += MO[E.mouth] || MO.smile;
+  h += `<ellipse class="w-talk" cx="120" cy="127" rx="7.5" ry="5" fill="#7A2B28"/>`;
   const feat = h; h = '';
   h += ST.front(C, L);
   if (L.band) h += `<path d="M75 80q45-22 90 0l1 10q-46-22-92 0z" fill="${L.acc}"/>`;
   let gl = '';
-  if (L.glasses) gl += `<g fill="none" stroke="#1F2430" stroke-width="2.6"><rect x="89" y="90" width="26" height="22" rx="9"/><rect x="125" y="90" width="26" height="22" rx="9"/><path d="M115 100h10M89 99l-11-3M151 99l11-3"/></g>`;
+  if (L.glasses) gl += `<g fill="none" stroke="#1F2430" stroke-width="2.4"><rect x="88" y="89" width="26" height="22" rx="9"/><rect x="126" y="89" width="26" height="22" rx="9"/><path d="M114 99h12M88 98l-10-3M152 98l10-3"/></g>`;
   if (L.phones === 'on') {
     h += `<path d="M70 98C66 22 174 22 170 98" fill="none" stroke="${dark}" stroke-width="8" stroke-linecap="round"/><rect x="60" y="84" width="20" height="36" rx="10" fill="${dark}"/><rect x="160" y="84" width="20" height="36" rx="10" fill="${dark}"/><rect x="64" y="91" width="6" height="22" rx="3" fill="${L.acc}"/><rect x="170" y="91" width="6" height="22" rx="3" fill="${L.acc}"/>`;
     if (L.mic) h += `<path d="M70 118q0 20 24 20" fill="none" stroke="${dark}" stroke-width="4" stroke-linecap="round"/><circle cx="96" cy="138" r="5" fill="${L.acc}"/>`;
   }
-  return `<svg class="wren-svg${live ? ' live' : ''}" viewBox="${vb}" role="img" aria-label="Wren"><g class="w-body"><g class="w-hairb">${hb}</g><g class="w-bodyb">${b}</g></g><g class="w-head"><g class="w-face">${hf}</g><g class="w-feat">${feat}</g><g class="w-hairf">${h}</g>${gl ? `<g class="w-feat">${gl}</g>` : ''}</g></svg>`;
+  return `<svg class="wren-svg${live ? ' live' : ''}" data-view="${view}" viewBox="${vb}" role="img" aria-label="Wren"><g class="w-body"><g class="w-hairb">${hb}</g><g class="w-bodyb">${b}</g></g><g class="w-head"><g class="w-face">${hf}</g><g class="w-feat">${feat}</g><g class="w-hairf">${h}</g>${gl ? `<g class="w-feat">${gl}</g>` : ''}</g></svg>`;
+}
+
+/* ---------- companion mode: Wren or Solo ---------- */
+function solo() { return D.companion === 'solo'; }
+function applyCompanion() {
+  document.documentElement.classList.toggle('solo', solo());
+  if (solo() && ui.tab === 'wren') ui.tab = 'breathe';
+}
+function companionSheet() {
+  const w = curWren();
+  return `<span class="grabber"></span><div class="plain-body comp-body">
+    <h2 class="comp-title">How do you want to breathe?</h2>
+    <p class="note" style="text-align:center;margin:0 8px 18px">Pick one. You can switch anytime in Settings.</p>
+    <button class="comp-card" data-act="companion" data-v="wren"><span class="comp-art" style="background:${wrenBg(w.look)}">${wrenSVG('full', Object.assign({}, w.look, { mood: 'happy' }))}</span><span class="comp-text"><b>With Wren</b><span>A coach who picks your tools, talks you through sessions, remembers what you tell her and learns your rhythm.</span></span></button>
+    <button class="comp-card" data-act="companion" data-v="solo"><span class="comp-art solo-art"><img src="mark-white.png" alt=""></span><span class="comp-text"><b>Solo</b><span>Just you and the breath. No companion and no chat. Voice cues, stats, tests and everything else stay.</span></span></button>
+  </div>`;
+}
+
+/* ---------- moods ---------- */
+const MOOD_LABEL = { neutral: '', happy: 'Happy', proud: 'Proud of you', calm: 'Calm', sleepy: 'Sleepy', fired: 'Fired up', concerned: 'Here for you', thinking: 'Thinking' };
+function moodFor() {
+  try {
+    const h = new Date().getHours(), st = stats();
+    if (WMood.win && Date.now() - WMood.win < 15 * 60000) return 'happy';
+    if (h >= 23 || h < 4) return 'sleepy';
+    if (st.practicedToday && (st.todaySec >= D.goal * 60 || st.streak >= 3)) return 'proud';
+    return 'neutral';
+  } catch (e) { return 'neutral'; }
+}
+function moodNow() { return WMood.until > Date.now() ? WMood.cur : moodFor(); }
+function moodApply(m, ms) {
+  if (m && MOODS[m]) { WMood.cur = m; WMood.until = Date.now() + (ms || 120000); } else WMood.until = 0;
+  const w = curWren();
+  document.querySelectorAll('.wren-svg.live').forEach(svg => {
+    const t = document.createElement('div');
+    t.innerHTML = wrenSVG(svg.dataset.view || 'full', svg.closest('.look-preview') ? Object.assign({}, w.look, { app: curLook() }) : w.look, true);
+    const n = t.firstElementChild; if (n) svg.innerHTML = n.innerHTML;
+  });
+  const cap = document.querySelector('.wren-hero .wren-portrait-cap');
+  if (cap) cap.textContent = portraitCap();
+}
+function portraitCap() { const l = MOOD_LABEL[moodNow()]; return `${curWren().mode} mode${l ? ' · ' + l : ''}`; }
+
+/* ---------- wardrobe picker (inside the look sheet) ---------- */
+function outfitSection() {
+  const w = curWren(), A = curLook(), cur = D.outfit && OUTFIT_BY[D.outfit] ? D.outfit : 'mode', lv = Bond.level;
+  return `<div class="grp-label">Outfit</div><div class="outfits" role="radiogroup" aria-label="Outfit">${OUTFITS.map(o => {
+    const locked = lv < o.lv && o.id !== 'mode';
+    return `<button class="outfit${locked ? ' locked' : ''}" role="radio" aria-checked="${cur === o.id}" data-act="look-outfit" data-id="${o.id}"${locked ? ' aria-disabled="true"' : ''}><span class="outfit-art" style="background:${wrenBg(w.look, true)}">${wrenSVG('full', Object.assign({}, w.look, { outfit: o.id, mood: 'neutral', app: A }))}${locked ? `<span class="outfit-lock">Bond ${o.lv}</span>` : ''}</span><span class="outfit-name">${o.name}</span></button>`;
+  }).join('')}</div>`;
+}
+
+/* ---------- she talks more ---------- */
+function wrenLine(kind) { const k = `${kind}_${curWren().id}`; return W_LINES[k] ? k : null; }
+function wrenSessionStart(cfg) {
+  if (solo() || !D.wrenVoice || A.muted || cfg.type === 'test') return;
+  const k = wrenLine('start');
+  if (k) setTimeout(() => { if (P && P.on && !P.paused && P.i === 0) wrenSpeak([k]); }, 250);
+}
+function wrenSessionMid(st, spoke) {
+  if (!P || P.midSaid || solo() || !D.wrenVoice || A.muted || P.type === 'test' || P.total < 120) return;
+  if (!(st.dur >= 3.5) || !['out', 'hold', 'rest', 'open', 'guide', 'tone'].includes(st.cue)) return;
+  if (P.doneDur / P.total < .5) return;
+  P.midSaid = true;
+  const k = wrenLine('mid');
+  if (k) setTimeout(() => { if (P && P.on && !P.paused) wrenSpeak([k]); }, spoke ? 1100 : 250);
+}
+
+/* ---------- weekly check-in ---------- */
+function weekStart(off) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + off * 7); return d; }
+function weekData(off) {
+  const s = weekStart(off), e = new Date(s); e.setDate(e.getDate() + 7);
+  const ss = D.sessions.filter(x => isPractice(x) && x.t >= +s && x.t < +e);
+  const days = Array(7).fill(0);
+  for (const x of ss) days[clamp(Math.floor((x.t - s) / 864e5), 0, 6)] += x.sec;
+  const by = {}; for (const x of ss) by[x.tech] = (by[x.tech] || 0) + x.sec;
+  const topId = Object.keys(by).sort((a, b) => by[b] - by[a])[0] || null;
+  let bond = 0; try { bond = bondEvents().filter(v => v.t >= +s && v.t < +e).reduce((a, v) => a + v.xp, 0); } catch (x) {}
+  const today = new Date().getDay();
+  return { key: dayKey(s), off, start: s, end: new Date(+e - 864e5), live: off === 0 && today !== 0, sessions: ss.length, minutes: Math.round(ss.reduce((a, x) => a + x.sec, 0) / 60),
+    days, daysOn: days.filter(Boolean).length, goalDays: days.filter(v => v >= D.goal * 60).length, topId, top: topId ? toolOf(topId) : null,
+    tests: D.tests.filter(t => t.t >= +s && t.t < +e).length, bond };
+}
+function weekFocus(W) {
+  if (W.daysOn < 3) { const id = W.topId && TECH_BY[W.topId] ? W.topId : 'sigh'; return { tool: id, why: 'Aim for four days. Same tool, short sessions, and let the habit build.' }; }
+  const since = Date.now() - 14 * 864e5, used = new Set(D.sessions.filter(x => x.t > since && TECH_BY[x.tech]).map(x => TECH_BY[x.tech].cat));
+  const miss = ['calm', 'focus', 'sleep', 'energy', 'recover', 'flow'].find(c => !used.has(c));
+  if (miss) { const T = TECH.find(t => t.cat === miss); return { tool: T.id, why: `You haven’t touched ${CAT[miss].name} lately. Give it one session this week.` }; }
+  return { tool: 'box', why: 'Keep the rhythm, and try one longer session this week.' };
+}
+function weekFallback(W) {
+  const n = displayName();
+  if (!W.sessions) return `Quiet week${n ? ', ' + n : ''}. No stress. One short session and we’re rolling again.`;
+  if (W.daysOn >= 5) return `${W.daysOn} days out of seven. That’s a real habit forming, and I noticed.`;
+  return `${W.sessions} session${W.sessions === 1 ? '' : 's'} and ${W.minutes} minutes. Solid. Let’s add one more day next week.`;
+}
+const Weekly = { busy: false };
+function weekCached(W) { const c = D.weekly && D.weekly[W.key]; return c && c.n === W.sessions ? c : null; }
+async function weekMake(W) {
+  if (Weekly.busy || weekCached(W) || solo()) return;
+  if (Coach.fn === undefined && (W.tries = (W.tries || 0) + 1) < 6) { setTimeout(() => weekMake(W), 1500); return; }
+  const focus = weekFocus(W);
+  let text = '', f = focus;
+  if (Coach.fn) {
+    Weekly.busy = true;
+    try {
+      let ctx = '{}'; try { ctx = JSON.stringify(wrenContext()); } catch (e) {}
+      const data = { weekOf: shortDate(W.start), finished: !W.live, sessions: W.sessions, minutes: W.minutes, daysPracticed: W.daysOn, daysAtGoal: W.goalDays, topTool: W.top ? plainName(W.top) : null, testsTaken: W.tests, bondXp: W.bond };
+      const r = await Coach.fn.json(`You are Wren, the coach and friend inside "Second Wind", a breathwork app. ${curWren().style}
+Write the player's weekly check-in: 2 or 3 sentences, at most 45 words, plain text, no emojis. Reflect on their week using its real numbers, notice one pattern, and end looking forward. Warm and honest, never guilt-tripping about missed days.
+Then pick one focus for next week: a tool id from ${TECH.map(T => T.id).join(', ')} and a reason of at most 16 words.
+Reply with only JSON: {"message": string, "focus": {"tool": string, "why": string}}
+This week: ${JSON.stringify(data)}
+Player data: ${ctx}`, { cache: false, modelTier: 'quick' });
+      if (r && typeof r.message === 'string') text = r.message.trim().slice(0, 400);
+      if (r && r.focus && TECH_BY[String(r.focus.tool)]) f = { tool: String(r.focus.tool), why: String(r.focus.why || focus.why).slice(0, 140) };
+    } catch (e) {}
+    Weekly.busy = false;
+  }
+  const all = Object.assign({}, D.weekly && typeof D.weekly === 'object' ? D.weekly : {});
+  all[W.key] = { n: W.sessions, text: text || weekFallback(W), focus: f, t: Date.now() };
+  D.weekly = Object.fromEntries(Object.entries(all).sort((a, b) => b[1].t - a[1].t).slice(0, 6));
+  persist(true);
+  if (ui.sheet && ui.sheet.kind === 'week') renderSheet();
+}
+function weekSheet(s) {
+  const W = weekData(s.off || 0), fmt = d => d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  const max = Math.max(...W.days, 1), labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'], todayIdx = (new Date().getDay() + 6) % 7;
+  const cached = weekCached(W);
+  if (!solo() && !cached) setTimeout(() => weekMake(W), 0);
+  const focus = (cached && cached.focus) || weekFocus(W), T = TECH_BY[focus.tool];
+  let h = `<span class="grabber"></span><div class="plain-head"><h2>Weekly check-in</h2><button class="btn btn-primary btn-sm" data-act="close-sheet" data-focus>Done</button></div><div class="plain-body">
+    <p class="note" style="margin:0 4px 14px">Week of ${fmt(W.start)} – ${fmt(W.end)}${W.live ? ' · so far' : ''}</p>
+    <div class="wk-grid"><div class="wk-cell"><div class="k">Sessions</div><div class="wk-v">${W.sessions}</div></div><div class="wk-cell"><div class="k">Minutes</div><div class="wk-v">${W.minutes}</div></div>
+    <div class="wk-cell"><div class="k">Days</div><div class="wk-v">${W.daysOn}<small> / 7</small></div></div><div class="wk-cell"><div class="k">${solo() ? 'Tests' : 'Bond XP'}</div><div class="wk-v">${solo() ? W.tests : '+' + W.bond}</div></div></div>
+    <div class="wk-days" aria-label="Minutes by day">${W.days.map((v, i) => `<div class="wk-day${W.live && i > todayIdx ? ' future' : ''}"><span class="wk-bar"><i style="height:${v ? Math.max(10, v / max * 100).toFixed(0) : 0}%"></i></span><span class="wk-lab">${labels[i]}</span></div>`).join('')}</div>`;
+  if (!solo()) h += `<div class="card wnote" style="margin-top:16px">${wrenAv(36)}<div><div class="k">From Wren</div><p>${cached ? esc(cached.text) : Coach.fn && !Weekly.busy ? 'Looking over your week…' : esc(weekFallback(W))}</p></div></div>`;
+  if (T) h += `<div class="grp-label">Your focus next week</div><div class="group"><button class="row" data-act="open" data-id="${T.id}"><span class="dot" style="${cs(T.c)}"></span><div class="row-main"><div class="row-title">${T.name}</div><div class="row-sub">${esc(focus.why)}</div></div>${ICON.chev}</button></div>`;
+  if (W.top) h += `<p class="caption" style="margin:12px 4px 0">Most-used this week: ${esc(plainName(W.top))}${W.goalDays ? ` · daily goal hit on ${W.goalDays} day${W.goalDays === 1 ? '' : 's'}` : ''}</p>`;
+  return h + `</div>`;
+}
+function weekCard() {
+  const d = new Date().getDay(), off = d === 0 ? 0 : d === 1 ? -1 : null;
+  if (off === null) return '';
+  const W = weekData(off);
+  if (!W.sessions) return '';
+  return `<button class="today wk-card" data-act="week-open" data-off="${off}"><span class="b-ico" style="--c1:#8C6CF0;--c2:#2A9DF4;width:40px;height:40px"><svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M4 15V9M8 15V5M12 15v-4M16 15V7"/></svg></span><div class="today-text"><div class="today-main">Your weekly check-in</div><div class="today-sub">${W.sessions} session${W.sessions === 1 ? '' : 's'} · ${W.minutes} min · ${W.daysOn} of 7 days</div></div>${ICON.chev}</button>`;
+}
+function weekRow() {
+  const d = new Date().getDay(), W0 = weekData(0), off = d === 1 && !W0.sessions ? -1 : 0, W = off ? weekData(-1) : W0;
+  return `<button class="wren-chat wk-row" data-act="week-open" data-off="${off}"><span class="b-ico" style="--c1:#8C6CF0;--c2:#2A9DF4;width:40px;height:40px"><svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M4 15V9M8 15V5M12 15v-4M16 15V7"/></svg></span><span class="wren-chat-main"><span class="wren-chat-title">${off ? 'Last week’s check-in' : d === 0 ? 'Your weekly check-in' : 'Your week so far'}</span><span class="wren-chat-sub">${W.sessions ? `${W.sessions} session${W.sessions === 1 ? '' : 's'} · ${W.minutes} min · ${W.daysOn} of 7 days` : 'Nothing yet this week. Your check-in lands Sunday.'}</span></span>${ICON.chev}</button>`;
+}
+function companionPrompt() {
+  if (!Cloud.ready) { if ((companionPrompt.n = (companionPrompt.n || 0) + 1) < 40) setTimeout(companionPrompt, 1000); return; }
+  if (D.companionAsked || D.sessions.length || sheetEl || (P && P.on) || Chat.open) return;
+  D.companionAsked = true; persist(true);
+  openSheet({ kind: 'companion' });
+}
+function companionSet(v) {
+  if (v !== 'wren' && v !== 'solo') return;
+  const was = D.companion;
+  D.companion = v; D.companionAsked = true; persist(true);
+  if (v === 'solo' && Chat.open) closeChat();
+  applyCompanion(); paintWren();
+  if (ui.sheet && ui.sheet.kind === 'companion') closeSheet(); else renderSheet();
+  renderView();
+  if (was !== v) toast(v === 'solo' ? 'Solo mode on. Wren is resting.' : 'Wren is back');
 }
 const curWren = () => WREN_BY[D.wren] || WRENS[0];
 const wrenBg = (L, lin) => lin ? `linear-gradient(160deg, ${L.bg[0]}, ${L.bg[1]})` : `radial-gradient(circle at 50% 38%, ${L.bg[0]} 0, ${L.bg[1]} 46%, ${L.bg[2]} 100%)`;
@@ -2756,7 +3044,7 @@ function paintWren() {
   $('#chatSub').textContent = w.id === 'classic' ? 'Your breath coach' : `${w.mode} mode`;
 }
 
-const W_LINES = {"g_colin":"Hey, Colin.","g_hey":"Hey there.","g_morning":"Good morning.","g_afternoon":"Good afternoon.","g_evening":"Good evening.","g_late":"You're up late.","intro":"I'm Wren, your breath coach. Tell me how you're feeling, and I'll find the right tool.","ask":"What do you need right now?","ok":"Got it.","sure":"Sure thing.","done":"Done.","hmm":"Good question.","try":"Here's what I'd try.","brake":"Let's press the brake.","gas":"Let's hit the gas.","lockin":"Let's lock in.","winddown":"Time to wind down.","reset":"Let's reset. One slow breath with me first.","rough":"That sounds rough. Let's take it down a notch.","nice":"Nice. I like where your head's at.","proud":"Look at that progress. Keep it going.","streak":"Your streak is alive. Let's keep it that way.","science":"Here's what the science says.","roots":"This one has a long history.","test":"Let's see where you're at.","rest":"You've earned some deep rest.","safe":"Go easy with this one, and stay seated.","doc":"That one's a question for a doctor, but here's what I can tell you.","end1":"Nice work.","end2":"Well done.","pr":"New personal best.","noted":"Noted. I'll remember that.","bondup":"Look at that. Our bond just leveled up."};
+const W_LINES = {"g_colin":"Hey, Colin.","g_hey":"Hey there.","g_morning":"Good morning.","g_afternoon":"Good afternoon.","g_evening":"Good evening.","g_late":"You're up late.","intro":"I'm Wren, your breath coach. Tell me how you're feeling, and I'll find the right tool.","ask":"What do you need right now?","ok":"Got it.","sure":"Sure thing.","done":"Done.","hmm":"Good question.","try":"Here's what I'd try.","brake":"Let's press the brake.","gas":"Let's hit the gas.","lockin":"Let's lock in.","winddown":"Time to wind down.","reset":"Let's reset. One slow breath with me first.","rough":"That sounds rough. Let's take it down a notch.","nice":"Nice. I like where your head's at.","proud":"Look at that progress. Keep it going.","streak":"Your streak is alive. Let's keep it that way.","science":"Here's what the science says.","roots":"This one has a long history.","test":"Let's see where you're at.","rest":"You've earned some deep rest.","safe":"Go easy with this one, and stay seated.","doc":"That one's a question for a doctor, but here's what I can tell you.","end1":"Nice work.","end2":"Well done.","pr":"New personal best.","noted":"Noted. I'll remember that.","bondup":"Look at that. Our bond just leveled up.","start_classic":"Let's do this together.","start_hype":"Alright, let's get after it!","start_zen":"Settle in. We'll go slow.","start_coach":"No shortcuts. Let's work.","start_lab":"Let's run the protocol.","start_sage":"Arrive here, one breath at a time.","start_owl":"Okay. Nice and slow, just us.","start_duo":"Comms on. Let's run it.","mid_classic":"You're doing great. Stay with it.","mid_hype":"Halfway there. Keep that energy up!","mid_zen":"Halfway. Soft and steady.","mid_coach":"Halfway. Don't let up now.","mid_lab":"Halfway. Keep the rhythm clean.","mid_sage":"Halfway. Let the breath carry you.","mid_owl":"Halfway there. You're doing fine.","mid_duo":"Halfway. Clean so far, keep it up.","win_classic":"That's a wrap. Nice work.","win_hype":"Let's go! That's how it's done!","win_zen":"Beautiful. Notice how you feel.","win_coach":"Good work. Same time tomorrow.","win_lab":"Protocol complete. Nice execution.","win_sage":"Well breathed. Carry this with you.","win_owl":"Nice. Now go get some rest.","win_duo":"Good game. That was clean."};
 const W_PICK = ['ok', 'noted', 'sure', 'done', 'hmm', 'try', 'brake', 'gas', 'lockin', 'winddown', 'reset', 'rough', 'nice', 'proud', 'streak', 'science', 'roots', 'test', 'rest', 'safe', 'doc'];
 const W_QUICK = ['What should I do right now?', 'I’m tilted', 'I can’t sleep', 'How am I doing?', 'Explain NSDR', 'Hype me up'];
 const W_TABS = { breathe: 'Breathe', tests: 'Tests', lab: 'Lab', reflect: 'Reflect', library: 'Library', profile: 'Profile' };
@@ -2811,7 +3099,7 @@ Breath tests: hold (Full Hold), exhale (Slow Exhale, CO2 tolerance), bolt (Empty
 Tabs: wren (your own tab: daily question and horoscope), breathe, tests, lab (the science), reflect (traditions and journal), library (their favorites and saved insights), profile (stats, rank, quests, trophies).
 
 Reply with ONLY one JSON object in this shape:
-{"text": string, "voice": string or null, "actions": array}
+{"text": string, "voice": string or null, "mood": string or null, "actions": array}
 "actions" holds 0 to 2 objects the player can tap, chosen from:
 {"type":"start","tool":"<tool id>","opt":<option index>}
 {"type":"tone","hz":<hz>,"opt":<0-2>}
@@ -2824,6 +3112,7 @@ Reply with ONLY one JSON object in this shape:
 {"type":"forget","id":"<note id>"}
 {"type":"nickname","name":"<1 to 3 words>"}  (only when nicknames are unlocked)
 Whenever you recommend a practice, include the matching action so they can start it in one tap.
+"mood" is your face while you say this: happy, proud, calm, sleepy, fired or concerned, or null for neutral. Match the moment: concerned when they're struggling, fired when you're hyping them up, proud when they share a win, calm when winding down.
 "voice" is the id of the ONE recorded line that best opens your reply, spoken aloud before they read your text, or null if none fits. Don't repeat that line in "text". Ids:
 ${voice}
 
@@ -2889,7 +3178,7 @@ function wrenWake(ms) {
   return true;
 }
 function wrenSpeak(ids) {
-  if (!D.wrenVoice || !A.ctx) return;
+  if (solo() || !D.wrenVoice || !A.ctx) return;
   if (!Chat.open && !(P && P.on) && Date.now() > wakeUntil) return;
   Voice.sayAll(ids.map(k => W_LINES[k]).filter(Boolean));
 }
@@ -2927,7 +3216,7 @@ async function wrenSend(text) {
     Chat.msgs.push({ role: 'wren', local: true, text: Coach.fn === undefined ? 'I’m still waking up. Give me a few seconds and send that again.' : `My chat isn’t connected yet, so I can’t think out loud here. I can still point you somewhere good: ${plainName(TECH_BY[sg.id])} fits ${sg.when}.`, actions: Coach.fn === undefined ? [] : [wrenAction({ type: 'start', tool: sg.id })] });
     chatSave(); renderChat(); return;
   }
-  Chat.busy = true; renderChat(); try { chatThinking(true); } catch (e) {}
+  Chat.busy = true; renderChat(); try { chatThinking(true); moodApply('thinking', 60000); } catch (e) {}
   const hist = Chat.msgs.filter(m => m.role === 'me' || (m.role === 'wren' && !m.local)).slice(-14);
   while (hist.length && hist[0].role !== 'me') hist.shift();
   const turns = [{ role: 'user', content: wrenRules() }].concat(hist.map(m => m.role === 'me' ? { role: 'user', content: m.text } : { role: 'assistant', content: JSON.stringify({ text: m.text, voice: m.voice || null, actions: m.actions || [] }) }));
@@ -2954,6 +3243,7 @@ async function wrenSend(text) {
       else if (chips.length < 2) chips.push(a);
     }
     const voice = W_PICK.includes(reply.voice) ? reply.voice : learned.length ? 'noted' : null;
+    try { const md = String(reply.mood || ''); moodApply(MOODS[md] && md !== 'thinking' && md !== 'neutral' ? md : learned.length ? 'happy' : null, 3 * 60000); } catch (e) {}
     Chat.msgs.push({ role: 'wren', text: reply.text.trim().slice(0, 700), voice, actions: chips });
     learned.forEach(n => Chat.msgs.push({ role: 'note', text: `Wren will remember: ${n.text}`, undo: n.id }));
     notes.forEach(t => Chat.msgs.push({ role: 'note', text: t }));
@@ -2962,7 +3252,7 @@ async function wrenSend(text) {
     if (notes.length) renderView();
     try { chatTalk(reply.text, learned.length); } catch (e) {}
     if (voice && Chat.open) wrenSpeak([voice]);
-  } else Chat.msgs.push({ role: 'wren', local: true, text: err });
+  } else { Chat.msgs.push({ role: 'wren', local: true, text: err }); try { moodApply('concerned', 20000); } catch (e) {} }
   Chat.msgs = Chat.msgs.slice(-60);
   chatSave(); renderChat();
 }
@@ -3059,6 +3349,7 @@ function goTab(t) {
   if (t === 'stats') { ui.tab = 'profile'; ui.pview = 'stats'; }
   else if (t === 'tests') { ui.tab = 'breathe'; ui.bview = 'tests'; }
   else ui.tab = t;
+  if (ui.tab === 'wren' && solo()) ui.tab = 'breathe';
 }
 function renderBreatheTab() {
   return navHead('Breathe', true) + subSeg('bview', [['practice', 'Practice'], ['browse', 'Browse'], ['tests', 'Tests']], ui.bview, 'Breathe section') + (ui.bview === 'tests' ? renderTests() : ui.bview === 'browse' ? renderBrowse() : renderBreathe());
@@ -3152,7 +3443,7 @@ Reply with only JSON: {"theme": string of at most 5 words, "text": 2 or 3 senten
   renderView();
 }
 function wrenGreet() {
-  if (Chat.greeted || !D.wrenVoice) return;
+  if (Chat.greeted || !D.wrenVoice || solo()) return;
   if (!wrenWake(9000)) return;
   Chat.greeted = true;
   const h = new Date().getHours(), n = (displayName() || '').toLowerCase();
@@ -3161,12 +3452,13 @@ function wrenGreet() {
 function renderWren() {
   const w = curWren(), n = displayName();
   let h = navHead('Wren');
-  h += `<div class="wren-portrait wren-hero w3-tilt${Bond.level >= 20 ? ' dayone' : ''}" style="background:${wrenBg(w.look)}">${wrenSVG('full', w.look, true)}${Bond.level >= 15 ? `<span class="wren-pin" aria-label="Matching pin">${esc(((D.nick || n || 'Y').trim()[0] || 'Y').toUpperCase())}</span>` : ''}<span class="wren-portrait-cap">${w.mode} mode</span></div>
+  h += `<div class="wren-portrait wren-hero w3-tilt${Bond.level >= 20 ? ' dayone' : ''}" style="background:${wrenBg(w.look)}">${wrenSVG('full', w.look, true)}${Bond.level >= 15 ? `<span class="wren-pin" aria-label="Matching pin">${esc(((D.nick || n || 'Y').trim()[0] || 'Y').toUpperCase())}</span>` : ''}<span class="wren-portrait-cap">${esc(portraitCap())}</span></div>
     <div class="wren-modes" role="radiogroup" aria-label="Wren’s personality">${WRENS.map(x => `<button class="wren-mode" role="radio" aria-checked="${x.id === w.id}" data-act="wren-mode" data-id="${x.id}">${wrenAv(52, '', x)}<span>${x.mode}</span></button>`).join('')}</div><p class="wren-tag">${w.tag}</p>`;
   { const A = curLook(), C = lookColors(A, w.look); h += `<button class="look-entry" data-act="look-open"><span class="look-dot" style="background:linear-gradient(135deg, ${C.s} 0 50%, ${C.h} 50%)"></span><span class="look-entry-main"><span class="look-entry-title">Customize her look</span><span class="look-entry-sub">${esc(lookName(A))} · ${HAIR_STYLES[A.style].name.toLowerCase()} · ${SKIN_BY[A.skin][1].toLowerCase()}</span></span>${ICON.chev}</button>`; }
   h += wnoteSection();
   const lastMsg = [...Chat.msgs].reverse().find(m => m.role === 'wren' && !m.local);
   h += `<button class="wren-chat" data-act="wren-open">${wrenAv(40)}<span class="wren-chat-main"><span class="wren-chat-title">Chat with Wren</span><span class="wren-chat-sub">${lastMsg ? esc(lastMsg.text) : `Tell her how you’re feeling${n ? ', ' + esc(n) : ''}. She’ll pick a tool and start it.`}</span></span>${ICON.chev}</button>`;
+  h += weekRow();
   h += bondSection();
 
   const Q = wrenQuestion(), ans = D.qa.find(x => x.id === Q.id), editing = !ans || ui.qEdit;
@@ -3335,7 +3627,7 @@ function bondCheck() {
   for (const e of s.ev) Bond.keys.add(e.key);
   const up = s.lv.level > Bond.level;
   Bond.level = s.lv.level;
-  if (!fresh.length) return;
+  if (!fresh.length || solo()) return;
   fresh.sort((a, b) => b.xp - a.xp);
   const shown = fresh.slice(0, 3), rest = fresh.slice(3).reduce((a, e) => a + e.xp, 0);
   shown.forEach(e => Bond.queue.push({ xp: e.xp, label: e.label }));
@@ -3597,7 +3889,7 @@ function chatTalk(text, learned) {
 /* session companion */
 function stWrenMount() {
   let box = stage.querySelector('.st-wren');
-  if (D.wrenStage === false) { if (box) box.remove(); if (P) P.w3 = null; return; }
+  if (D.wrenStage === false || solo()) { if (box) box.remove(); if (P) P.w3 = null; return; }
   if (!box) { box = document.createElement('div'); box.className = 'st-wren'; box.setAttribute('aria-hidden', 'true'); stage.appendChild(box); }
   const w = curWren();
   box.classList.remove('done');
@@ -3651,6 +3943,7 @@ function bondCelClose() {
 }
 
 function renderView() {
+  try { applyCompanion(); } catch (e) {}
   const v = $('#view');
   v.innerHTML = ui.tab === 'lab' ? renderLab() : ui.tab === 'reflect' ? renderReflect() : ui.tab === 'library' ? renderLibrary() : ui.tab === 'wren' ? renderWren() : ui.tab === 'profile' ? renderMe() : renderBreatheTab();
   document.querySelectorAll('.tab').forEach(b => { if (b.dataset.tab === ui.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
@@ -3680,8 +3973,8 @@ function closeSheet(instant) {
 function renderSheet() {
   if (!sheetEl || !ui.sheet) return;
   const s = ui.sheet;
-  sheetEl.classList.toggle('plain', ['settings', 'badge', 'flex', 'backup', 'look'].includes(s.kind));
-  sheetEl.innerHTML = s.kind === 'tone' ? toneSheet(s) : s.kind === 'lineage' ? lineageSheet(s) : s.kind === 'tech' ? techSheet(s) : s.kind === 'test' ? testSheet(s) : s.kind === 'table' ? tableSheet(s) : s.kind === 'badge' ? badgeSheet(s) : s.kind === 'flex' ? flexSheet(s) : s.kind === 'backup' ? backupSheet(s) : s.kind === 'look' ? lookSheet() : settingsSheet();
+  sheetEl.classList.toggle('plain', ['settings', 'badge', 'flex', 'backup', 'look', 'week', 'companion'].includes(s.kind));
+  sheetEl.innerHTML = s.kind === 'tone' ? toneSheet(s) : s.kind === 'lineage' ? lineageSheet(s) : s.kind === 'tech' ? techSheet(s) : s.kind === 'test' ? testSheet(s) : s.kind === 'table' ? tableSheet(s) : s.kind === 'badge' ? badgeSheet(s) : s.kind === 'flex' ? flexSheet(s) : s.kind === 'backup' ? backupSheet(s) : s.kind === 'look' ? lookSheet() : s.kind === 'week' ? weekSheet(s) : s.kind === 'companion' ? companionSheet() : settingsSheet();
 }
 const sheetHero = (c, cat, title, art, fav) => `<div class="sh-hero" style="${cs(c)}"><span class="grabber"></span><button class="sh-close" data-act="close-sheet" aria-label="Close">${ICON.close}</button>${fav ? favBtn(fav) : ''}${art}<div class="sh-cat">${cat}</div><h2 class="sh-title">${title}</h2></div>`;
 
@@ -3734,8 +4027,10 @@ function settingsSheet() {
       <label class="row"><div class="row-title">Name</div><input type="text" id="set-name" data-set="name" value="${esc(D.name)}" placeholder="${esc(hint)}" maxlength="30" autocomplete="off"></label>
       <div class="row"><div class="row-main"><div class="row-title">Daily goal</div><div class="row-sub">${D.goal} min a day</div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">−</button><button data-act="goal" data-d="1" aria-label="Raise goal">+</button></div></div>
     </div>
+    <div class="grp-label">Companion</div><div class="group"><div class="row" style="display:block"><div class="seg" role="radiogroup" aria-label="Companion">${[['wren', 'With Wren'], ['solo', 'Solo']].map(([k, l]) => `<button role="radio" aria-checked="${(D.companion || 'wren') === k}" data-act="companion" data-v="${k}">${l}</button>`).join('')}</div></div></div>
+    <p class="grp-foot">${solo() ? 'Solo hides Wren, her chat and the bond. Everything she knows stays saved for when you switch back.' : 'Wren picks tools, talks you through sessions and remembers what you tell her.'}</p>
     <div class="grp-label">Sound</div><div class="group"><div class="row" style="display:block"><div class="seg" role="radiogroup" aria-label="Guide sound">${[['breath', 'Breath'], ['chimes', 'Chimes'], ['off', 'Off']].map(([k, l]) => `<button role="radio" aria-checked="${D.sound === k}" data-act="sound" data-k="${k}">${l}</button>`).join('')}</div></div>
-      ${sw('ambience', 'Ambient drone', 'A soft chord that brightens as you inhale')}${sw('voice', 'Voice cues', 'Wren speaks each cue. NSDR has its own switch.')}${sw('wrenVoice', 'Wren’s voice in chat', 'She says a short line out loud with each reply')}${sw('wrenStage', 'Wren in sessions', 'She breathes along with you on the session screen')}
+      ${sw('ambience', 'Ambient drone', 'A soft chord that brightens as you inhale')}${sw('voice', 'Voice cues', 'Wren speaks each cue. NSDR has its own switch.')}${solo() ? '' : sw('wrenVoice', 'Wren’s voice', 'Short lines in chat, and at the start, halfway and end of a session') + sw('wrenStage', 'Wren in sessions', 'She breathes along with you on the session screen')}
       <div class="row" style="display:block"><div class="row-title">Drone tuning</div><div class="row-sub" style="margin-bottom:10px">Tune the ambient drone to a Solfeggio tone. Tap to hear it.</div><div class="chips">${[0].concat(TONES.map(z => z.hz)).map(hz => `<button class="chip${D.drone === hz ? ' on' : ''}" aria-pressed="${D.drone === hz}" data-act="drone" data-hz="${hz}">${hz ? hz + ' Hz' : 'Default'}</button>`).join('')}</div></div></div>
     <p class="grp-foot">${Voice.status()} If you hear nothing on iPhone, check the silent switch.</p>
     <div class="grp-label">Touch</div><div class="group">${sw('haptics', 'Haptics', 'A tap on every phase change and each second of the inhale')}</div>
@@ -3894,7 +4189,7 @@ const H = {
   stop() { try { if (typeof navigator.vibrate === 'function') navigator.vibrate(0); } catch (e) {} }
 };
 /* ---------- recorded voice: one audio file, played by segment ---------- */
-const VOICE_IDX = {"Long breath out":[0.45,1.077],"Breathe in":[1.977,0.756],"Breathe out":[3.184,0.793],"Hum":[4.427,0.514],"Hold":[5.391,0.605],"Look at the red dot. Soft eyes.":[6.446,2.303],"Widen to the next ring":[9.198,1.343],"Close your eyes. Watch the afterimage.":[10.991,2.404],"Palm your eyes":[13.845,0.931],"Lie on your back, arms by your sides, palms up. Let your feet fall open and close your eyes.":[15.226,6.09],"From here on, try not to move. Let your jaw hang loose and your hands go soft.":[21.767,4.895],"Breathe in through your nose":[27.112,1.353],"Long, slow exhale through your mouth":[28.915,2.161],"Stop steering your breath. Let it find its own rhythm, and feel your body getting heavier.":[31.527,5.114],"Bring your attention to the bottoms of your feet. Notice your heels on the floor. Nothing to change.":[37.091,5.974],"Move up through your calves, knees and thighs. Let them feel heavy, as if they are sinking.":[43.515,5.477],"Notice your hips and lower back resting on the ground. Let them spread and soften.":[49.442,4.948],"Feel your belly rise as you breathe in, and fall as you breathe out.":[54.84,3.96],"Notice your chest and your heartbeat. Let your ribs move on their own.":[59.249,4.158],"Bring your attention to your hands. Each finger, your palms, any warmth or tingling.":[63.857,5.105],"Move up through your wrists, forearms and upper arms. Let them go completely heavy.":[69.413,5.195],"Let your shoulders drop away from your ears. Soften the back of your neck.":[75.058,4.124],"Relax your jaw, your tongue, the space between your eyebrows. Let your eyes sink back.":[79.632,5.236],"Now feel your whole body at once, heavy and still, held by the ground.":[85.318,4.47],"Nothing to do now. Stay here, awake but deeply at rest. If your mind drifts, come back to the feel of your breath.":[90.237,7.273],"If you drifted into thought, that is fine. Come back to the weight of your body on the ground.":[97.96,5.263],"Take a slow, deeper breath in. Wiggle your fingers and toes.":[103.673,3.726],"When you are ready, open your eyes and sit up slowly. Notice how you feel.":[107.849,4.506],"Recovery breath":[112.805,1.042],"Let go":[114.297,0.712],"Deep breath in":[115.459,1.011],"Observe":[116.92,0.802],"Big breath in":[118.172,0.922],"Fill your lungs":[119.544,0.981],"Exhale slowly":[120.975,1.047],"Breathe normally":[122.472,0.953],"Normal exhale":[123.875,1.094],"Breathe":[125.419,0.68],"Hey, Colin.":[126.549,0.862],"Hey there.":[127.861,0.645],"Good morning.":[128.957,0.783],"Good afternoon.":[130.19,0.983],"Good evening.":[131.623,0.802],"You're up late.":[132.875,0.845],"I'm Wren, your breath coach. Tell me how you're feeling, and I'll find the right tool.":[134.171,4.322],"What do you need right now?":[138.942,1.306],"Got it.":[140.698,0.613],"Sure thing.":[141.761,0.692],"Done.":[142.903,0.499],"Good question.":[143.851,0.934],"Here's what I'd try.":[145.235,1.078],"Let's press the brake.":[146.763,1.159],"Let's hit the gas.":[148.372,1.065],"Let's lock in.":[149.887,0.969],"Time to wind down.":[151.306,1.22],"Let's reset. One slow breath with me first.":[152.976,2.8],"That sounds rough. Let's take it down a notch.":[156.226,2.54],"Nice. I like where your head's at.":[159.216,1.897],"Look at that progress. Keep it going.":[161.563,2.137],"Your streak is alive. Let's keep it that way.":[164.15,2.588],"Here's what the science says.":[167.188,1.395],"This one has a long history.":[169.032,1.54],"Let's see where you're at.":[171.023,1.054],"You've earned some deep rest.":[172.527,1.328],"Go easy with this one, and stay seated.":[174.305,2.203],"That one's a question for a doctor, but here's what I can tell you.":[176.958,3.451],"Nice work.":[180.859,0.83],"Well done.":[182.139,0.717],"New personal best.":[183.305,1.198],"All the way out":[184.954,0.934],"Pursed-lip exhale":[186.338,1.167],"Ocean breath in":[187.955,1.06],"Ocean breath out":[189.466,1.099],"In through the left":[191.014,1.058],"Out through the right":[192.523,1.068],"In through the right":[194.041,1.052],"Out through the left":[195.542,1.098],"Lion’s breath out":[197.091,1.187],"Reset":[198.728,0.709],"Next part.":[199.887,0.911],"Noted. I'll remember that.":[201.248,1.621],"Look at that. Our bond just leveled up.":[203.319,2.299]};
+const VOICE_IDX = {"Long breath out":[0.45,1.077],"Breathe in":[1.977,0.756],"Breathe out":[3.184,0.793],"Hum":[4.427,0.514],"Hold":[5.391,0.605],"Look at the red dot. Soft eyes.":[6.446,2.303],"Widen to the next ring":[9.198,1.343],"Close your eyes. Watch the afterimage.":[10.991,2.404],"Palm your eyes":[13.845,0.931],"Lie on your back, arms by your sides, palms up. Let your feet fall open and close your eyes.":[15.226,6.09],"From here on, try not to move. Let your jaw hang loose and your hands go soft.":[21.767,4.895],"Breathe in through your nose":[27.112,1.353],"Long, slow exhale through your mouth":[28.915,2.161],"Stop steering your breath. Let it find its own rhythm, and feel your body getting heavier.":[31.527,5.114],"Bring your attention to the bottoms of your feet. Notice your heels on the floor. Nothing to change.":[37.091,5.974],"Move up through your calves, knees and thighs. Let them feel heavy, as if they are sinking.":[43.515,5.477],"Notice your hips and lower back resting on the ground. Let them spread and soften.":[49.442,4.948],"Feel your belly rise as you breathe in, and fall as you breathe out.":[54.84,3.96],"Notice your chest and your heartbeat. Let your ribs move on their own.":[59.249,4.158],"Bring your attention to your hands. Each finger, your palms, any warmth or tingling.":[63.857,5.105],"Move up through your wrists, forearms and upper arms. Let them go completely heavy.":[69.413,5.195],"Let your shoulders drop away from your ears. Soften the back of your neck.":[75.058,4.124],"Relax your jaw, your tongue, the space between your eyebrows. Let your eyes sink back.":[79.632,5.236],"Now feel your whole body at once, heavy and still, held by the ground.":[85.318,4.47],"Nothing to do now. Stay here, awake but deeply at rest. If your mind drifts, come back to the feel of your breath.":[90.237,7.273],"If you drifted into thought, that is fine. Come back to the weight of your body on the ground.":[97.96,5.263],"Take a slow, deeper breath in. Wiggle your fingers and toes.":[103.673,3.726],"When you are ready, open your eyes and sit up slowly. Notice how you feel.":[107.849,4.506],"Recovery breath":[112.805,1.042],"Let go":[114.297,0.712],"Deep breath in":[115.459,1.011],"Observe":[116.92,0.802],"Big breath in":[118.172,0.922],"Fill your lungs":[119.544,0.981],"Exhale slowly":[120.975,1.047],"Breathe normally":[122.472,0.953],"Normal exhale":[123.875,1.094],"Breathe":[125.419,0.68],"Hey, Colin.":[126.549,0.862],"Hey there.":[127.861,0.645],"Good morning.":[128.957,0.783],"Good afternoon.":[130.19,0.983],"Good evening.":[131.623,0.802],"You're up late.":[132.875,0.845],"I'm Wren, your breath coach. Tell me how you're feeling, and I'll find the right tool.":[134.171,4.322],"What do you need right now?":[138.942,1.306],"Got it.":[140.698,0.613],"Sure thing.":[141.761,0.692],"Done.":[142.903,0.499],"Good question.":[143.851,0.934],"Here's what I'd try.":[145.235,1.078],"Let's press the brake.":[146.763,1.159],"Let's hit the gas.":[148.372,1.065],"Let's lock in.":[149.887,0.969],"Time to wind down.":[151.306,1.22],"Let's reset. One slow breath with me first.":[152.976,2.8],"That sounds rough. Let's take it down a notch.":[156.226,2.54],"Nice. I like where your head's at.":[159.216,1.897],"Look at that progress. Keep it going.":[161.563,2.137],"Your streak is alive. Let's keep it that way.":[164.15,2.588],"Here's what the science says.":[167.188,1.395],"This one has a long history.":[169.032,1.54],"Let's see where you're at.":[171.023,1.054],"You've earned some deep rest.":[172.527,1.328],"Go easy with this one, and stay seated.":[174.305,2.203],"That one's a question for a doctor, but here's what I can tell you.":[176.958,3.451],"Nice work.":[180.859,0.83],"Well done.":[182.139,0.717],"New personal best.":[183.305,1.198],"All the way out":[184.954,0.934],"Pursed-lip exhale":[186.338,1.167],"Ocean breath in":[187.955,1.06],"Ocean breath out":[189.466,1.099],"In through the left":[191.014,1.058],"Out through the right":[192.523,1.068],"In through the right":[194.041,1.052],"Out through the left":[195.542,1.098],"Lion’s breath out":[197.091,1.187],"Reset":[198.728,0.709],"Next part.":[199.887,0.911],"Noted. I'll remember that.":[201.248,1.621],"Look at that. Our bond just leveled up.":[203.319,2.299],"Let's do this together.":[206.068,1.2],"Alright, let's get after it!":[207.718,1.548],"Settle in. We'll go slow.":[209.716,1.703],"No shortcuts. Let's work.":[211.87,1.717],"Let's run the protocol.":[214.037,1.346],"Arrive here, one breath at a time.":[215.833,1.964],"Okay. Nice and slow, just us.":[218.247,2.059],"Comms on. Let's run it.":[220.756,1.647],"You're doing great. Stay with it.":[222.853,1.71],"Halfway there. Keep that energy up!":[225.014,2.124],"Halfway. Soft and steady.":[227.588,1.646],"Halfway. Don't let up now.":[229.683,1.506],"Halfway. Keep the rhythm clean.":[231.639,1.781],"Halfway. Let the breath carry you.":[233.871,1.831],"Halfway there. You're doing fine.":[236.151,1.908],"Halfway. Clean so far, keep it up.":[238.51,2.1],"That's a wrap. Nice work.":[241.06,1.629],"Let's go! That's how it's done!":[243.139,1.788],"Beautiful. Notice how you feel.":[245.376,1.875],"Good work. Same time tomorrow.":[247.701,1.955],"Protocol complete. Nice execution.":[250.106,2.521],"Well breathed. Carry this with you.":[253.077,1.999],"Nice. Now go get some rest.":[255.526,1.761],"Good game. That was clean.":[257.737,1.621]};
 const Voice = {
   raw: null, buf: null, state: 'idle', src: null, pending: null,
   fetch() {
@@ -4008,12 +4303,13 @@ function begin(cfg) {
   el.panel.hidden = true; el.panel.innerHTML = '';
   stage.classList.remove('is-open', 'paused', 'gaze-mode', 'eyes-closed', 'guide-mode');
   stage.hidden = false; document.documentElement.classList.add('staged');
-  try { stWrenMount(); } catch (e) {}
+  try { const ct = P.type === 'tech' && TECH_BY[P.id] ? TECH_BY[P.id].cat : ''; if (!solo() && (ct === 'calm' || ct === 'sleep')) { WMood.cur = 'calm'; WMood.until = Date.now() + 3 * 3600000; } stWrenMount(); } catch (e) {}
   P.wrapW = el.wrap.clientWidth || 300;
   try { soundIcon(); pauseIcon(); } catch (e) {}
   keepAwake(true);
   advance(performance.now());
   requestAnimationFrame(loop);
+  try { if (cfg.type === 'tech') wrenSessionStart(cfg); } catch (e) {}
 }
 
 function advance(at) {
@@ -4039,7 +4335,9 @@ function advance(at) {
   else if (st.hum) H.buzz(st.dur);
   else H.tap(['in', 'rest', 'guide', 'gaze', 'tone'].includes(st.cue) || P.tone ? 'light' : st.cue === 'out' ? 'strong' : 'double');
   const speak = (P.voice != null ? P.voice : D.voice) && !A.muted;
-  try { if (speak && !st.fast && !st.quiet && st.cue !== 'ready' && (st.dur == null || st.dur >= 2.5)) say(st.text || st.say || st.label, P.slow); } catch (e) {}
+  const spoke = speak && !st.fast && !st.quiet && st.cue !== 'ready' && (st.dur == null || st.dur >= 2.5);
+  try { if (spoke) say(st.text || st.say || st.label, P.slow); } catch (e) {}
+  try { if (P.type === 'tech') wrenSessionMid(st, spoke); } catch (e) {}
   return true;
 }
 
@@ -4168,10 +4466,11 @@ function finish(complete) {
   const xpH = xpBlock(before, safeProfile());
   if (complete) {
     A.done(); H.tap('double');
-    if ((P.voice != null ? P.voice : D.voice) && !A.muted) {
-      const pr = P.records.some(r => prevBest[r.kind] && r.sec > prevBest[r.kind].sec);
-      setTimeout(() => Voice.sayAll([W_LINES[pr ? 'pr' : Math.random() < .5 ? 'end1' : 'end2']]), 900);
-    }
+    const pr = P.records.some(r => prevBest[r.kind] && r.sec > prevBest[r.kind].sec);
+    const wk = P.type === 'tech' && !solo() && D.wrenVoice && !A.muted ? wrenLine('win') : null;
+    if (wk) setTimeout(() => Voice.sayAll([W_LINES[pr ? 'pr' : wk]]), 900);
+    else if ((P.voice != null ? P.voice : D.voice) && !A.muted) setTimeout(() => Voice.sayAll([W_LINES[pr ? 'pr' : Math.random() < .5 ? 'end1' : 'end2']]), 900);
+    if (!solo()) { WMood.win = Date.now(); setTimeout(() => { try { moodApply(pr ? 'proud' : 'happy', 15 * 60000); } catch (e) {} }, 250); }
   }
   if (P.type === 'test') {
     if (!complete || !P.records.length) { closeStage(); return; }
@@ -4182,7 +4481,7 @@ function finish(complete) {
   }
   stage.style.setProperty('--s', '.85');
   el.panel.hidden = false;
-  try { stWrenDone(complete); } catch (e) {}
+  try { if (!complete && WMood.cur === 'calm') moodApply(null); stWrenDone(complete); } catch (e) {}
   const xb = el.panel.querySelector('.res-xp .xpbar i');
   if (xb) requestAnimationFrame(() => requestAnimationFrame(() => { xb.style.width = xb.dataset.to + '%'; }));
   const b = el.panel.querySelector('[data-focus]'); if (b) b.focus({ preventScroll: true });
@@ -4406,6 +4705,15 @@ document.addEventListener('click', e => {
     case 'bond-how': ui.bondHow = !ui.bondHow; renderView(); break;
     case 'bond-cel-close': bondCelClose(); break;
     case 'look-open': openSheet({ kind: 'look' }); break;
+    case 'look-outfit': {
+      const o = OUTFIT_BY[b.dataset.id]; if (!o) break;
+      if (o.id !== 'mode' && Bond.level < o.lv) { toast(`Unlocks at Bond ${o.lv}`); break; }
+      D.outfit = o.id; persist(true); paintWren(); renderSheet(); renderView();
+      try { w3React(document.querySelector('.look-preview .wren-svg'), 'happy'); } catch (x) {}
+      break;
+    }
+    case 'companion': companionSet(b.dataset.v); break;
+    case 'week-open': openSheet({ kind: 'week', off: +b.dataset.off || 0 }); break;
     case 'look-preset': { const p = PRESET_BY[b.dataset.id]; if (p) { lookApply(Object.assign({ preset: p.id }, p.look)); try { w3React(document.querySelector('.look-preview .wren-svg'), 'happy'); } catch (x) {} } break; }
     case 'look-set': {
       const A = curLook(); A[b.dataset.k] = b.dataset.v;
@@ -4469,7 +4777,8 @@ document.addEventListener('input', e => {
 });
 
 renderView();
-Cloud.start();
+Cloud.start().then(() => { Cloud.ready = true; }, () => { Cloud.ready = true; });
+setTimeout(() => { try { companionPrompt(); } catch (e) {} }, 2600);
 setTimeout(() => Voice.fetch(), 1200);
 setInterval(() => { const ae = document.activeElement; if (ae && /^(TEXTAREA|INPUT)$/.test(ae.tagName)) return; if (!P || !P.on) { if (!sheetEl) renderView(); } }, 5 * 60 * 1000);
 })();

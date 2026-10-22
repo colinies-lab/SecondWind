@@ -1,4 +1,4 @@
-# Second Wind · Alpha 1.0
+# Second Wind · Alpha 1.1
 
 Breathwork, built on the neuroscience. This folder is the standalone web-app version of Second Wind, ready for GitHub Pages. Install it from Safari and it runs full-screen with its own icon, and works offline.
 
